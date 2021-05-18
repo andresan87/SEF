@@ -2,7 +2,7 @@
 
 class KeyStateManager
 {
-	uint m_pressingElapsedFrameCount = 0;
+	private uint m_pressingElapsedFrameCount = 0;
 	private ::KEY_STATE m_currentState = ::KS_UP;
 
 	void update(const bool isPressed)
