@@ -19,6 +19,7 @@ class UIButton : UIDrawable
 	private ::KEY_STATE m_forceState = ::KS_UP;
 
 	private ::vector2 m_pressingRelativeAbsPosition;
+	private ::vector2 m_hitScrollOffset;
 
 	sef::Color cursorColorMultiplier;
 
@@ -230,7 +231,7 @@ class UIButton : UIDrawable
 					if (m_lastTouchInButton[t])
 					{
 						m_beingHeld = true;
-						if (processState(state, m_lastDownPos[t]) == ::KS_UP)
+						if (!isPointInside(m_lastDownPos[t], 128.0f))
 						{
 							cancelTouch(t);
 						}
@@ -254,6 +255,19 @@ class UIButton : UIDrawable
 		{
 			sef::util::playSample(hitSoundEffect);
 			@m_buttonPressEffect = sef::uieffects::createButtonPressEffect(m_currentPressEffectScale, m_currentColor, m_pressColor);
+
+			m_hitScrollOffset = getScrollOffset().getAbsoluteOffset();
+		}
+
+		if (m_beingHeld)
+		{
+			if (distance(m_hitScrollOffset, getScrollOffset().getAbsoluteOffset()) > 32.0f)
+			{
+				for (uint t = 0; t < touchCount; t++)
+				{
+					cancelTouch(t);
+				}
+			}
 		}
 
 		computeHoldTime();
@@ -282,18 +296,6 @@ class UIButton : UIDrawable
 			minO = posRelative;
 			maxO = posRelative + size;
 		}
-	}
-
-	private ::KEY_STATE processState(
-		const ::KEY_STATE state,
-		const ::vector2 &in touchPos)
-	{
-		::KEY_STATE r = state;
-		if (!isPointInside(touchPos, 128.0f))
-		{
-			r = ::KS_UP;
-		}
-		return r;
 	}
 
 	private void computeHoldTime()
