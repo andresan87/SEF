@@ -21,7 +21,7 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 	float m_currentScale;
 	sef::Color m_currentColor;
 
-	private ::vector2 m_scrollAbsoluteOffset;
+	private sef::UIScrollOffset@ m_scrollOffset = sef::UIScrollOffset();
 
 	private void UIDrawableConstructor(
 		sef::Drawable@ drawable,
@@ -95,6 +95,16 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 	{
 		super(beginningAnimation);
 		UIDrawableConstructor(@drawable, normPos, origin, scale);
+	}
+
+	void setScrollOffset(sef::UIScrollOffset@ scrollOffset)
+	{
+		@m_scrollOffset = @scrollOffset;
+	}
+
+	sef::UIScrollOffset@ getScrollOffset()
+	{
+		return @m_scrollOffset;
 	}
 
 	void setDismissEffect(sef::WaypointManager@ dismissEffect)
@@ -171,7 +181,7 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 				@dismissAnimation = sef::uieffects::createSlideOutEffect(m_currentNormPos);
 			setAnimation(@dismissAnimation);
 
-			setNormPos(m_currentNormPos - sef::math::normalizePosition(m_scrollAbsoluteOffset));
+			setNormPos(m_currentNormPos - sef::math::normalizePosition(m_scrollOffset.getAbsoluteOffset()));
 			setScale(m_currentScale);
 			setColor(m_currentColor);
 
@@ -214,16 +224,6 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 			setAnimation(@animation);
 		}
 		UIAnimatedElement::dismiss();
-	}
-
-	void setScrollAbsoluteOffset(const ::vector2 &in absoluteOffset)
-	{
-		m_scrollAbsoluteOffset = absoluteOffset;
-	}
-
-	::vector2 getScrollAbsoluteOffset() const
-	{
-		return m_scrollAbsoluteOffset;
 	}
 
 	void setColor(const sef::Color color)
@@ -400,8 +400,8 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 
 	bool isVisible() const
 	{
-		const ::vector2 min(getAbsoluteMin() + m_scrollAbsoluteOffset);
-		const ::vector2 max(getAbsoluteMax() + m_scrollAbsoluteOffset);
+		const ::vector2 min(getAbsoluteMin() + m_scrollOffset.getAbsoluteOffset());
+		const ::vector2 max(getAbsoluteMax() + m_scrollOffset.getAbsoluteOffset());
 
 		// compute screen boundaries
 		::vector2 screenMin(0.0f);
@@ -424,7 +424,7 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 
 	void updateCurrentPos(const sef::Waypoint@ p)
 	{
-		m_currentNormPos = p.pos + m_normPos + sef::math::normalizePosition(m_scrollAbsoluteOffset);
+		m_currentNormPos = p.pos + m_normPos + sef::math::normalizePosition(m_scrollOffset.getAbsoluteOffset());
 	}
 
 	void update() override

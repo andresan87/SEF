@@ -102,13 +102,13 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 		return (m_cursor !is null);
 	}
 
-	bool grabFirst()
+	bool grabFirst(const bool acceptNoneOption) override
 	{
 		if (sef::globalMouseCursorTracker !is null && sef::globalMouseCursorTracker.isMouseCursorVisible())
 			return false;
 
 		sef::UIButton@ previous = getCurrent();
-		const bool r = UIButtonIterator::grabFirst();
+		const bool r = UIButtonIterator::grabFirst(acceptNoneOption);
 
 		sef::UIButton@ new = getCurrent();
 		if (new is null)
@@ -140,7 +140,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 			const ::vector2 currentAbsPos(current.getAbsoluteCurrentMiddlePoint());
 			const ::vector2 previousAbsPos(previous.getAbsoluteCurrentMiddlePoint());
 
-			direction = (currentAbsPos - previousAbsPos) * -1.0f;
+			direction = (previousAbsPos - currentAbsPos);
 		}
 		else
 		{
@@ -184,7 +184,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 
 		@m_cursor = sef::UIDrawable(
 			@drawable,
-			current.getNormPos(),
+			current.getNormPos() + sef::math::normalizePosition(current.getScrollOffset().getAbsoluteOffset()),
 			slideEffect,
 			current.getOrigin(),
 			current.getScale());
@@ -262,7 +262,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 
 				if (current.isDismissed())
 				{
-					if (!grabFirst())
+					if (!grabFirst(true /*acceptNoneOption*/))
 						dismissCursor(sef::uieffects::createFadeOutEffect(200, 0));
 				}
 			}
@@ -288,7 +288,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 			// follow current button
 			if (current !is null)
 			{
-				m_cursor.setNormPos(current.getNormPos());
+				m_cursor.setNormPos(current.getNormPos() + sef::math::normalizePosition(current.getScrollOffset().getAbsoluteOffset()));
 
 				sef::FrameDrawable@ cursorFrame = cast<sef::FrameDrawable>(m_cursor.getDrawable());
 				cursorFrame.setSize(computeSize(@current));

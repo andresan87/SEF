@@ -28,7 +28,7 @@ class UIButtonIterator
 	{
 		if (m_current is null)
 		{
-			UIButtonIterator::grabFirst();
+			UIButtonIterator::grabFirst(false /*acceptNoneOption*/);
 			return;
 		}
 
@@ -45,8 +45,11 @@ class UIButtonIterator
 			if (!buttons[t].iterable)
 				continue;
 
-			const float distance = ::distance(m_current.getNormPos(), buttons[t].getNormPos());
-			const ::vector2 b(::normalize(buttons[t].getNormPos() - m_current.getNormPos()));
+			const vector2 currentNormPos(m_current.getNormPos() + sef::math::normalizePosition(m_current.getScrollOffset().getAbsoluteOffset()));
+			const vector2 buttonNormPos(buttons[t].getNormPos() + sef::math::normalizePosition(buttons[t].getScrollOffset().getAbsoluteOffset()));
+
+			const float distance = ::distance(currentNormPos, buttonNormPos);
+			const ::vector2 b(::normalize(buttonNormPos - currentNormPos));
 
 			const float value = distance == 0.0f ? 0.0f : (sef::math::dot(direction, b) / distance);
 
@@ -110,7 +113,7 @@ class UIButtonIterator
 		return true;
 	}
 
-	bool grabFirst()
+	bool grabFirst(const bool acceptNoneOption)
 	{
 		@m_current = null;
 		if (m_first != "")
@@ -118,7 +121,7 @@ class UIButtonIterator
 			UIButtonIterator::grab(m_first);
 		}
 
-		if (m_current is null)
+		if (m_current is null && (!acceptNoneOption || m_first != "NONE"))
 		{
 			return grabFirstInList();
 		}

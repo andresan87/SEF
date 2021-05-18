@@ -3,25 +3,84 @@
 class UIScroller
 {
 	private ::vector2 m_scroll;
+	private float m_lastWheelScroll = 0.0f;
+	private bool m_grabbing = false;
+
+	bool horizontalScroll = false;
+	bool enableDpadScroll = true;
 
 	bool isPointInside(const ::vector2 &in p, const ::vector2 &in absoluteMin, const ::vector2 &in absoluteMax) const
 	{
 		return sef::math::isPointInRect(p, absoluteMin, absoluteMax - absoluteMin, ::vector2(0.0f));
 	}
 
-	::vector2 processScroll(const ::vector2 &in scroll)
+	::vector2 processScroll(::vector2 scroll)
 	{
 		::ETHInput@ input = ::GetInputHandle();
-		float wheelScroll = input.GetWheelState();
-		const float scrollSpeed = UnitsPerSecond(320.0f);
-		if (sef::input::global.getUpState()   == ::KS_HIT) wheelScroll += scrollSpeed;
-		if (sef::input::global.getDownState() == ::KS_HIT) wheelScroll -= scrollSpeed;
-		return ::vector2(0.0f, scroll.y + (wheelScroll * (5.0f)));
+		m_lastWheelScroll = input.GetWheelState() * 5.0f;
+		const float scrollSpeed = UnitsPerSecond(320.0f) * 5.0f;
+
+		if (horizontalScroll)
+		{
+			scroll.x += m_lastWheelScroll;
+			if (enableDpadScroll && sef::input::global.getPriorState() == ::KS_HIT) scroll.x += scrollSpeed;
+			if (enableDpadScroll && sef::input::global.getNextState()  == ::KS_HIT) scroll.x -= scrollSpeed;
+		}
+		else
+		{
+			scroll.y += m_lastWheelScroll;
+			if (enableDpadScroll && sef::input::global.getUpState()    == ::KS_HIT) scroll.y += scrollSpeed;
+			if (enableDpadScroll && sef::input::global.getDownState()  == ::KS_HIT) scroll.y -= scrollSpeed;
+		}
+
+		return scroll;
 	}
 
 	void update(const ::vector2 &in absoluteMin, const ::vector2 &in absoluteMax)
 	{
-		computeScrolling(absoluteMin, absoluteMax);
+		m_grabbing = false;
+		::ETHInput@ input = ::GetInputHandle();
+		::vector2 scrollSum;
+		for (uint t = 0; t < input.GetMaxTouchCount(); t++)
+		{
+			const ::KEY_STATE state = input.GetTouchState(t);
+			if (state == ::KS_DOWN)
+			{
+				if (isPointInside(sef::input::global.getLastTouchHit(t), absoluteMin, absoluteMax))
+				{
+					m_grabbing = true;
+					scrollSum += input.GetTouchMove(t);
+				}
+			}
+		}
+
+		if (scrollSum == vector2(0.0f))
+			m_scroll *= ::pow(0.9f, 60.0f / ::GetFPSRate());
+		else
+			m_scroll = scrollSum;
+
+		m_scroll = processScroll(m_scroll);
+	}
+
+	bool isGrabbing() const
+	{
+		return m_grabbing;
+	}
+
+	float getLastWhellScroll() const
+	{
+		return m_lastWheelScroll;
+	}
+
+	::vector2 addToScroll(const ::vector2 &in scroll)
+	{
+		m_scroll += scroll;
+		return m_scroll;
+	}
+
+	void setScroll(const ::vector2 &in scroll)
+	{
+		m_scroll = scroll;
 	}
 
 	::vector2 getScroll() const
@@ -41,31 +100,35 @@ class UIScroller
 		return absoluteOffset;
 	}
 
-	private void computeScrolling(const ::vector2 &in absoluteMin, const ::vector2 &in absoluteMax)
+	::vector2 clampAbsoluteOffsetX(
+		::vector2 absoluteOffset,
+		const float absoluteMinScrollX,
+		const float absoluteMaxScrollX)
 	{
-		::ETHInput@ input = ::GetInputHandle();
-		::vector2 scrollSum;
-		for (uint t = 0; t < input.GetMaxTouchCount(); t++)
-		{
-			const ::KEY_STATE state = input.GetTouchState(t);
-			if (state == ::KS_DOWN)
-			{
-				if (isPointInside(sef::input::global.getLastTouchHit(t), absoluteMin, absoluteMax))
-				{
-					scrollSum += input.GetTouchMove(t);
-				}
-			}
-		}
-		if (scrollSum == vector2(0.0f))
-			m_scroll *= ::pow(0.9f, 60.0f / ::GetFPSRate());
-		else
-			m_scroll = scrollSum;
-
-		m_scroll = processScroll(m_scroll);
+		if (absoluteOffset.x < absoluteMinScrollX)
+			absoluteOffset.x = sef::math::smoothSlide(absoluteOffset.x, absoluteMinScrollX);
+		if (absoluteOffset.x > absoluteMaxScrollX)
+			absoluteOffset.x = sef::math::smoothSlide(absoluteOffset.x, absoluteMaxScrollX);
+		return absoluteOffset;
 	}
 
 	void draw()
 	{
+	}
+}
+
+class UIScrollOffset
+{
+	private ::vector2 m_absoluteOffset;
+
+	void setAbsoluteOffset(const ::vector2 &in absoluteOffset)
+	{
+		m_absoluteOffset = absoluteOffset;
+	}
+
+	::vector2 getAbsoluteOffset() const
+	{
+		return m_absoluteOffset;
 	}
 }
 

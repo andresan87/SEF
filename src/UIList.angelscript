@@ -16,6 +16,7 @@ class UIList : sef::UIElement
 	private bool m_dismissed = false;
 
 	private sef::UIScroller@ m_scroller;
+	private sef::UIScrollOffset m_scrollOffset;
 
 	private bool m_vertical;
 
@@ -31,7 +32,12 @@ class UIList : sef::UIElement
 		@m_scroller = sef::UIScroller();
 		m_vertical = vertical;
 
-		computeAlignment();
+		// zero boundaries
+		m_absoluteUnscrolledMin = ::GetScreenSize();
+		m_absoluteUnscrolledMax = ::vector2(0.0f);
+
+		// align elements
+		m_rails = m_normOrigin;
 	}
 
 	sef::UIDrawable@ getElement(const uint t)
@@ -46,6 +52,7 @@ class UIList : sef::UIElement
 		parent.insertElement(@element);
 		m_elements.insertLast(@element);
 		element.setNormPos(m_rails);
+		element.setScrollOffset(@m_scrollOffset);
 		updateRails(@element, extraAbsoluteOffset);
 
 		m_absoluteUnscrolledMin = sef::math::min(m_absoluteUnscrolledMin, element.getAbsoluteMin());
@@ -55,29 +62,6 @@ class UIList : sef::UIElement
 	void resetRailsNormPos(const ::vector2 &in normPos)
 	{
 		m_rails = normPos;
-	}
-
-	private void computeAlignment()
-	{
-		// zero boundaries
-		m_absoluteUnscrolledMin = ::GetScreenSize();
-		m_absoluteUnscrolledMax = ::vector2(0.0f);
-
-		// align elements
-		m_rails = m_normOrigin;
-		const uint elementCount = m_elements.length();
-		for (uint t = 0; t < elementCount; t++)
-		{
-			m_elements[t].setNormPos(m_rails);
-			updateRails(@(m_elements[t]), ::vector2());
-		}
-
-		// set boundaries
-		if (elementCount > 0)
-		{
-			m_absoluteUnscrolledMin = m_elements[0].getAbsoluteMin();
-			m_absoluteUnscrolledMax = m_elements[elementCount - 1].getAbsoluteMax();
-		}
 	}
 
 	float getAbsoluteMinScrollY() const
@@ -111,11 +95,7 @@ class UIList : sef::UIElement
 			m_absoluteOffset += m_scroller.getScroll();
 			m_absoluteOffset =  m_scroller.clampAbsoluteOffsetY(m_absoluteOffset, getAbsoluteMinScrollY(), getAbsoluteMaxScrollY());
 
-			// update elements
-			for (uint t = 0; t < m_elements.length(); t++)
-			{
-				m_elements[t].setScrollAbsoluteOffset(m_absoluteOffset);
-			}
+			m_scrollOffset.setAbsoluteOffset(vector2(0.0f, m_absoluteOffset.y));
 		}
 	}
 
