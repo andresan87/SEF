@@ -280,6 +280,23 @@ void seekEntitiesFromBucket(const ::vector2 &in bucket, ::ETHEntityArray@ entiti
 	}
 }
 
+void seekEntitiesFromBuckets(const ::vector2[]@ buckets, ::ETHEntityArray@ entities, sef::seeker::EntityChooser@ chooser)
+{
+	for (uint b = 0; b < buckets.length(); b++)
+	{
+		::ETHEntityArray ents;
+		::GetEntitiesFromBucket(buckets[b], ents);
+		for (uint t = 0; t < ents.Size(); t++)
+		{
+			if (chooser.choose(ents[t]))
+			{
+				::ETHEntity@ entity = @(ents[t]);
+				 entities.Insert(entity);
+			}
+		}
+	}
+}
+
 ::ETHEntityArray@ seekEntities(const string[]@ entityNames)
 {
 	ETHEntityArray allEntities;
@@ -294,6 +311,30 @@ void seekEntitiesFromBucket(const ::vector2 &in bucket, ::ETHEntityArray@ entiti
 		}
 	}
 	return @r;
+}
+
+vector2[]@ findIntersectingBuckets(const vector2 &in pos, const vector2 &in size)
+{
+	const vector2 halfSize(size * 0.5f);
+	const vector2[] rectangleEdges = {
+		vector2(pos - halfSize), // upper-left corner
+		vector2(pos + vector2(halfSize.x,-halfSize.y)), // upper-right corner
+		vector2(pos + halfSize), // lower-right corner
+		vector2(pos + vector2(-halfSize.x, halfSize.y)) // lower-left corner
+	};
+
+	vector2[] bucketSet;
+
+	for (uint t = 0; t < rectangleEdges.length(); t++)
+	{
+		const vector2 edgeBucket(GetBucket(rectangleEdges[t]));
+		if (bucketSet.find(edgeBucket) < 0)
+		{
+			bucketSet.insertLast(edgeBucket);
+		}
+	}
+
+	return @bucketSet;
 }
 
 ETHEntity@ seekClosestEntityAroundBucket(const ::vector2 &in origin, sef::seeker::EntityChooser@ chooser)
