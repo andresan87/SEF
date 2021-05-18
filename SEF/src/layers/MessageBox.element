@@ -1,0 +1,80 @@
+layer
+{
+	options = popup;
+	darkenBg = 0.8;
+}
+
+title
+{
+	type = frame-sprite;
+	fileName = SEF/media/frame-bg.png;
+
+	posX = 0.5;
+	posY = 0.3;
+	originX = 0.5;
+	originY = 0.5;
+	scale = 1.0;
+	frameSizeX = 400;
+	frameSizeY = 100;
+
+	text = Message title;
+	textFont = Verdana64_shadow.fnt;
+
+	appearEffect = zoom-in;
+	appearEffectDuration = 300;
+	appearDelay = 0;
+
+	dismissEffect = zoom-out;
+	dismissEffectDuration = 300;
+	dismissDelay = 200;
+}
+
+no
+{
+	type = frame-button;
+	fileName = SEF/media/frame-bg.png;
+
+	posX = 0.35;
+	posY = 0.7;
+	originX = 0.5;
+	originY = 0.5;
+	scale = 1.0;
+	frameSizeX = 200;
+	frameSizeY = 100;
+
+	text = No;
+	textFont = Verdana64_shadow.fnt;
+
+	appearEffect = zoom-in;
+	appearEffectDuration = 300;
+	appearDelay = 300;
+
+	dismissEffect = zoom-out;
+	dismissEffectDuration = 300;
+	dismissDelay = 0;
+}
+
+yes
+{
+	type = frame-button;
+	fileName = SEF/media/frame-bg.png;
+
+	posX = 0.65;
+	posY = 0.7;
+	originX = 0.5;
+	originY = 0.5;
+	scale = 1.0;
+	frameSizeX = 200;
+	frameSizeY = 100;
+
+	text = Yes;
+	textFont = Verdana64_shadow.fnt;
+
+	appearEffect = zoom-in;
+	appearEffectDuration = 300;
+	appearDelay = 150;
+
+	dismissEffect = zoom-out;
+	dismissEffectDuration = 300;
+	dismissDelay = 0;
+}
