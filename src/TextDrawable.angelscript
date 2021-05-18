@@ -64,11 +64,11 @@ class TextDrawable : sef::Drawable, sef::UIEffectManager
 		if (keepColor)
 		{
 			sef::Color c(m_color);
-			finalColor = sef::Color(c.getAlpha() * color.getAlpha() * computeEffectAlpha(), c.getVector3() * computeEffectColor()).getUInt();
+			finalColor = sef::Color(c.getAlpha() * color.getAlpha() * computeEffectAlpha(), c.getVector3() * computeEffectColor()).getClampedUInt();
 		}
 		else
 		{
-			finalColor = (sef::Color(m_color) * color * sef::Color(computeEffectColor())).getUInt();
+			finalColor = (sef::Color(m_color) * color * sef::Color(computeEffectColor())).getClampedUInt();
 		}
 
 		// draw
