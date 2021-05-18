@@ -3,10 +3,12 @@
 class State
 {
 	private ::string m_sceneName;
+	private ::vector2 m_bucketSize;
 
 	State(const ::string &in sceneName, const ::vector2 &in bucketSize = ::vector2(256, 256))
 	{
 		m_sceneName = sceneName;
+		m_bucketSize = bucketSize;
 		::LoadScene(
 			m_sceneName,
 			"sef_internal_onSceneCreated",
@@ -21,6 +23,7 @@ class State
 		const ::vector2 &in bucketSize = ::vector2(256, 256))
 	{
 		m_sceneName = sceneName;
+		m_bucketSize = bucketSize;
 		::LoadScene(
 			m_sceneName,
 			"sef_internal_onSceneCreated",
@@ -30,9 +33,14 @@ class State
 			bucketSize);
 	}
 
-	string getSceneName()
+	vector2 getBucketSize() const final
 	{
-		return m_sceneName;
+		return m_bucketSize;
+	}
+
+	vector2 getBucketWorldSpaceCenter(const vector2 &in bucket) const
+	{
+		return (bucket * m_bucketSize) + (m_bucketSize * 0.5f);
 	}
 
 	void loadExclusiveResources() {}
