@@ -33,6 +33,11 @@ class State
 			bucketSize);
 	}
 
+	string getSceneName()
+	{
+		return m_sceneName;
+	}
+
 	vector2 getBucketSize() const final
 	{
 		return m_bucketSize;
