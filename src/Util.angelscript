@@ -80,6 +80,16 @@ float getBaseStateElapsedTimeF()
 	return sef::util::getBaseState().getBaseStateElapsedTimeF();
 }
 
+vector2 getBucketSize()
+{
+	return sef::util::getBaseState().getBucketSize();
+}
+
+vector2 getBucketWorldSpaceCenter(const vector2 &in bucket)
+{
+	return sef::util::getBaseState().getBucketWorldSpaceCenter(bucket);
+}
+
 uint getBaseStateElapsedTime()
 {
 	return sef::util::getBaseState().getBaseStateElapsedTime();
@@ -91,6 +101,14 @@ void callLayer(sef::UILayer@ layer)
 	if (state is null)
 		return;
 	state.callLayer(@layer);
+}
+
+void setCurrentLayer(const ::string &in name)
+{
+	sef::BaseState@ state = sef::util::getBaseState();
+	if (state is null)
+		return;
+	state.setCurrentLayer(name);
 }
 
 sef::UILayerManager@ getBaseStateLayerManager()
