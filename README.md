@@ -1,2 +1,2 @@
-# sef
+# SEF
  Standard Ethanon Framework
