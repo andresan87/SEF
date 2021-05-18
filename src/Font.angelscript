@@ -11,6 +11,10 @@ class StaticFont : sef::Font
 {
 	private ::string m_font;
 
+	StaticFont()
+	{
+	}
+
 	StaticFont(const ::string &in font)
 	{
 		setFont(font);
