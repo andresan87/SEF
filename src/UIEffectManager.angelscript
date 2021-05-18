@@ -210,6 +210,42 @@ class UIBounceEffect : sef::UIEffect
 	void draw() override { }
 }
 
+class UIDelayedBounceEffect : sef::UIEffect
+{
+	private float m_elapsedTime = 0.0f;
+	private float m_stride;
+	private float m_scaleA;
+	private float m_scaleB;
+
+	UIDelayedBounceEffect(const float stride, const float scaleA, const float scaleB, const float delay)
+	{
+		m_stride = ::max(stride, 1.0f);
+		m_scaleA = scaleA;
+		m_scaleB = scaleB;
+		m_elapsedTime = -delay;
+	}
+
+	void update() override
+	{
+		m_elapsedTime += ::GetLastFrameElapsedTimeF();
+
+		if (m_elapsedTime < 0.0f)
+		{
+			return;
+		}
+
+		if (m_elapsedTime >= m_stride)
+		{
+			m_elapsedTime -= m_stride;
+		}
+		const float radian = (m_elapsedTime / m_stride) * (::PI * 2.0f);
+		const float bias = (::sin(radian) + 1.0f) / 2.0f;
+		scale = sef::interpolator::interpolate(m_scaleA, m_scaleB, bias);
+	}
+
+	void draw() override { }
+}
+
 class UIFloatEffect : sef::UIEffect
 {
 	private float m_elapsedTime = 0.0f;
