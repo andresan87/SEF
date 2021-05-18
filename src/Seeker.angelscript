@@ -1,13 +1,13 @@
 ﻿namespace sef {
 namespace seeker {
 
-::vector2[] bucketsAround = {
+const ::vector2[] bucketsAround = {
 	::vector2(-1,-1), ::vector2(0,-1), ::vector2(1,-1),
 	::vector2(-1, 0),                  ::vector2(1, 0),
 	::vector2(-1, 1), ::vector2(0, 1), ::vector2(1, 1)
 };
 
-::vector2[] bucketsAroundXL = {
+const ::vector2[] bucketsAroundXL = {
 	::vector2(-1,-1), ::vector2(0,-1), ::vector2(1,-1),
 	::vector2(-1, 0),                  ::vector2(1, 0),
 	::vector2(-1, 1), ::vector2(0, 1), ::vector2(1, 1),
@@ -36,7 +36,7 @@ class ByNameChooser : EntityChooser
 		m_name = name;
 	}
 
-	bool choose(::ETHEntity@ entity)
+	bool choose(::ETHEntity@ entity) override
 	{
 		return entity.GetEntityName() == m_name;
 	}
@@ -56,7 +56,7 @@ class ByNamesChooser : EntityChooser
 		m_names = names;
 	}
 
-	bool choose(::ETHEntity@ entity)
+	bool choose(::ETHEntity@ entity) override
 	{
 		for (uint t = 0; t < m_names.length(); t++)
 		{
@@ -78,7 +78,7 @@ class ByNamePrefixChooser : EntityChooser
 		m_prefix = prefix;
 	}
 
-	bool choose(::ETHEntity@ entity)
+	bool choose(::ETHEntity@ entity) override
 	{
 		return sef::string::prefixMatches(entity.GetEntityName(), m_prefix);
 	}
@@ -93,7 +93,7 @@ class ByIDChooser : EntityChooser
 		m_id = id;
 	}
 
-	bool choose(::ETHEntity@ entity)
+	bool choose(::ETHEntity@ entity) override
 	{
 		return entity.GetID() == m_id;
 	}
@@ -101,7 +101,7 @@ class ByIDChooser : EntityChooser
 
 class LightSourceChooser : EntityChooser
 {
-	bool choose(::ETHEntity@ entity)
+	bool choose(::ETHEntity@ entity) override
 	{
 		return entity.HasLightSource();
 	}
