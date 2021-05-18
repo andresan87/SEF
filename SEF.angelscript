@@ -118,6 +118,11 @@ void setFixedHeight(const float fixedHeight)
 	::SetFixedHeight(fixedHeight);
 }
 
+float getFixedHeight()
+{
+	return sef::state::fixedHeight;
+}
+
 ::string getFrameworkDirectoryName()
 {
 	return "SEF/";

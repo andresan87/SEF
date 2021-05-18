@@ -30,6 +30,11 @@ class State
 			bucketSize);
 	}
 
+	string getSceneName()
+	{
+		return m_sceneName;
+	}
+
 	void loadExclusiveResources() {}
 	void releaseExclusiveResources() {}
 	void onCreated() {}
