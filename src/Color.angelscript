@@ -86,6 +86,16 @@ class Color
 		return ::vector3(r, g, b);
 	}
 
+	::vector3 getGrayscale() const
+	{
+		return ::vector3((r + g + b) / 3.0f);
+	}
+
+	::vector3 getSaturatedGrayscale() const
+	{
+		return ::vector3(min(1.0f, (r + g + b) / 3.0f));
+	}
+
 	float getAlpha() const
 	{
 		return a;
@@ -94,6 +104,15 @@ class Color
 	uint getUInt() const
 	{
 		return ::ARGB(uint(a * 255.0f), uint(r * 255.0f), uint(g * 255.0f), uint(b * 255.0f));
+	}
+
+	uint getClampedUInt() const
+	{
+		return ::ARGB(
+			uint(min(1.0f, a) * 255.0f),
+			uint(min(1.0f, r) * 255.0f),
+			uint(min(1.0f, g) * 255.0f),
+			uint(min(1.0f, b) * 255.0f));
 	}
 
 	sef::Color opMul(sef::Color color) const
