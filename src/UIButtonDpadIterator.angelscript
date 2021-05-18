@@ -177,7 +177,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 
 		// create element
 		sef::FrameDrawable drawable(
-			"sprites/button-highlight.png",
+			sef::options::frameworkPath + "SEF/media/button-highlight.png",
 			computeSize(@current),
 			false,  // borderOutside
 			true);

@@ -148,6 +148,8 @@ namespace options {
 		}
 	} // namespace internal
 
+	::string frameworkPath = "";
+
 	const ::string JOYSTICK_MODE = "joystick-mode";
 
 	bool isInJoystickOnlyMode()
