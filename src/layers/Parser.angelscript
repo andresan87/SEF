@@ -91,8 +91,17 @@ namespace layerparser {
 		{
 			float opacity = 1.0f;
 			file.getFloat("layer", "darkenBg", opacity);
+
+			uint delay;
+			if (!file.getUInt("layer", "darkenBgDelay", delay))
+			{
+				delay = 0;
+			}
+
 			if (opacity > 0.0f)
-				layer.insertBackgroundElement(sef::LayerDarkBackground(opacity));
+			{
+				layer.insertBackgroundElement(sef::LayerDarkBackground(opacity, 1000, 300, vector3(0.0f), "", delay));
+			}
 		}
 
 		if (sef::layerparser::isPopup(file.get("layer", "options")))
