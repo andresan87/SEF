@@ -96,6 +96,24 @@ void runTests()
 	sef::tests::assert(!sef::string::isValidNumber("10.bb"), "isValidNumber test #57");
 	sef::tests::assert(!sef::string::isValidNumber(""), "isValidNumber test #58");
 
+	sef::tests::assert(sef::string::split("testing;this",      ";").length() == 2, "split test #1");
+	sef::tests::assert(sef::string::split("testing;this;text", ";").length() == 3, "split test #2");
+	sef::tests::assert(sef::string::split("t",                 ";").length() == 1, "split test #3");
+	sef::tests::assert(sef::string::split("t;s",               ";").length() == 2, "split test #4");
+	sef::tests::assert(sef::string::split("t;s;w",             ";").length() == 3, "split test #5");
+	sef::tests::assert(sef::string::split("",                  ";").length() == 1, "split test #6");
+	sef::tests::assert(sef::string::split("word",              ";").length() == 1, "split test #7");
+	sef::tests::assert(sef::string::split("word;",             ";").length() == 2, "split test #8");
+	sef::tests::assert(sef::string::split("word;;two",         ";").length() == 3, "split test #9");
+	sef::tests::assert(sef::string::split("word;;;two",        ";").length() == 4, "split test #10");
+	sef::tests::assert(sef::string::split("word;;two;",        ";").length() == 4, "split test #11");
+
+	sef::tests::assert(sef::string::split("t",         ";")[0] == "t",    "split test #12");
+	sef::tests::assert(sef::string::split("word;two",  ";")[0] == "word", "split test #13");
+	sef::tests::assert(sef::string::split("word;two",  ";")[1] == "two",  "split test #14");
+	sef::tests::assert(sef::string::split("word;;two", ";")[1] == "",     "split test #15");
+	sef::tests::assert(sef::string::split("word;;two", ";")[2] == "two",  "split test #16");
+
 	bool success;
 	sef::tests::assert(sef::math::isVersionGreaterOrEqual("0.0.0", "0.0.0", success) && success, "isVersionGreaterOrEqual test #1");
 	sef::tests::assert(sef::math::isVersionGreaterOrEqual("0.0.1", "0.0.0", success) && success, "isVersionGreaterOrEqual test #2");
