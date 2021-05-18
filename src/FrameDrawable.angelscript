@@ -50,6 +50,11 @@ class FrameDrawable : Drawable
 		m_frameColor = frameColor;
 	}
 
+	sef::Color getFrameColor() const
+	{
+		return m_frameColor;
+	}
+
 	sef::TextDrawable@ setText(const ::string &in text, sef::Font@ font, const sef::Color@ textColor, const float textScale)
 	{
 		sef::TextDrawable textDrawable(@font, text, textScale, false, textColor.getUInt());
