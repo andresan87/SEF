@@ -55,7 +55,12 @@ sef::WaypointManager@ createSingleBounceEffect(const uint stride, const float sc
 	return sef::uieffects::createSingleBounceEffect(stride, 1.0f, scaleB, delay);
 }
 
-sef::WaypointManager@ createSingleBounceEffect(const uint stride, const float scaleA, const float scaleB, const uint delay)
+sef::WaypointManager@ createSingleBounceEffect(
+	const uint stride,
+	const float scaleA,
+	const float scaleB,
+	const uint delay,
+	const sef::Color color = sef::Color(0xFFFFFFFF))
 {
 	const bool repeat = false;
 	sef::WaypointManager r(repeat);
@@ -65,7 +70,7 @@ sef::WaypointManager@ createSingleBounceEffect(const uint stride, const float sc
 		r.addWaypoint(sef::Waypoint(::vector2(0.0f), delay, sef::Color(0xFFFFFFFF), @sef::easing::smoothEnd, 0.0f, scaleA));
 
 	r.addWaypoint(sef::Waypoint(::vector2(0.0f), stride, sef::Color(0xFFFFFFFF), @sef::easing::smoothEnd,       0.0f, scaleA));
-	r.addWaypoint(sef::Waypoint(::vector2(0.0f), stride, sef::Color(0xFFFFFFFF), @sef::easing::smoothBothSides, 0.0f, scaleB));
+	r.addWaypoint(sef::Waypoint(::vector2(0.0f), stride, color,                  @sef::easing::smoothBothSides, 0.0f, scaleB));
 	r.addWaypoint(sef::Waypoint(::vector2(0.0f),     50, sef::Color(0xFFFFFFFF), @sef::easing::linear,          0.0f, scaleA));
 	return @r;
 }
@@ -203,11 +208,17 @@ sef::WaypointManager@ createZoomEffect(
 	return @r;
 }
 
-sef::WaypointManager@ createColorBlendEffect(sef::Color@ colorA, sef::Color@ colorB, const uint effectDuration = 400)
+sef::WaypointManager@ createColorBlendEffect(sef::Color@ colorA, sef::Color@ colorB, const uint effectDuration = 400, const uint delay = 0)
 {
 	const bool repeat = false;
 	sef::WaypointManager r(repeat);
 	r.setPausable(false);
+
+	if (delay > 0)
+	{
+		r.addWaypoint(sef::Waypoint(::vector2(0.0f), delay, colorA, @sef::easing::linear));
+	}
+
 	r.addWaypoint(sef::Waypoint(::vector2(0.0f), effectDuration, colorA, @sef::easing::smoothBothSides));
 	r.addWaypoint(sef::Waypoint(::vector2(0.0f),             12, colorB, @sef::easing::linear));
 	return @r;
