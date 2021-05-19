@@ -2,13 +2,22 @@
 
 class DefaultPopup : UISchedulerLayer
 {
+	protected sef::UILayerManager@ m_layerManager;
+	protected sef::UILayer@ m_currentLayer;
 	protected bool autoDetectEscapeInput = true;
 
 	bool enableGamepadBack = true;
 
 	DefaultPopup(const ::string &in name, const ::string &in first)
 	{
-		super(name, true, first);
+		super(name, true /*iterable*/, first);
+	}
+
+	DefaultPopup(const ::string &in name, const ::string &in first, sef::UILayerManager@ layerManager, sef::UILayer@ currentLayer)
+	{
+		super(name, true /*iterable*/, first);
+		@m_currentLayer = @currentLayer;
+		@m_layerManager = @layerManager;
 	}
 
 	void update()
@@ -41,6 +50,11 @@ class DefaultPopup : UISchedulerLayer
 		{
 			onPopupClosed();
 		}
+
+		if (getScheduledOperation() != "")
+		{
+			onScheduledOperation();
+		}
 	}
 
 	bool onBackRequested()
@@ -55,6 +69,14 @@ class DefaultPopup : UISchedulerLayer
 
 	void onPopupClosed()
 	{
+	}
+
+	void onScheduledOperation()
+	{
+		if (m_currentLayer !is null && m_layerManager !is null)
+		{
+			m_layerManager.setCurrentLayer(m_currentLayer.getName());
+		}
 	}
 
 	bool detectEscapeTouch() const

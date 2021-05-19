@@ -9,8 +9,6 @@ enum MESSAGE_BOX_BUTTON_RESULT
 class MessageBoxPopup : DefaultPopup
 {
 	private ::enmlFile m_elementsFile;
-	protected sef::UILayerManager@ m_layerManager;
-	protected sef::UILayer@ m_currentLayer;
 
 	::vector2 FRAME_BORDERS = ::vector2(116.0f, 94.0f);
 
@@ -22,9 +20,7 @@ class MessageBoxPopup : DefaultPopup
 		::string elementFileName = "",
 		const ::string first = "no")
 	{
-		super(name, first);
-		@m_layerManager = @layerManager;
-		@m_currentLayer = @currentLayer;
+		super(name, first, @layerManager, @m_currentLayer);
 
 		if (elementFileName == "")
 			elementFileName = ::GetResourceDirectory() + sef::getFrameworkDirectoryName() + "layers/MessageBox.element";
@@ -99,10 +95,6 @@ class MessageBoxPopup : DefaultPopup
 	{
 		checkSlotButtons();
 		DefaultPopup::update();
-		if (getScheduledOperation() != "")
-		{
-			m_layerManager.setCurrentLayer(m_currentLayer.getName());
-		}
 	}
 
 	private void checkSlotButtons()
