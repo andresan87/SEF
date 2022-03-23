@@ -11,7 +11,7 @@ class LayerDarkBackground : UIDrawable
 		const uint delay = 0,
 		const uint dismissDelay = 0)
 	{
-		const ::string spriteName = (sprite == "") ? "SEF/media/sef-white-2-1.png" : sprite;
+		const ::string spriteName = (sprite == "") ? sef::options::frameworkDirectoryPath + sef::options::frameworkDirectoryName + "media/sef-white-2-1.png" : sprite;
 		const float scaleY = (::GetScreenSize().y / ::GetSpriteFrameSize(spriteName).y);
 		const float scaleX = (::GetScreenSize().x / ::GetSpriteFrameSize(spriteName).x);
 		const float scale = max(scaleX, scaleY);

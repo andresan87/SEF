@@ -27,7 +27,7 @@ class MessageBoxPopup : DefaultPopup
 		@m_currentLayer = @currentLayer;
 
 		if (elementFileName == "")
-			elementFileName = ::GetResourceDirectory() + sef::getFrameworkDirectoryName() + "layers/MessageBox.element";
+			elementFileName = ::GetResourceDirectory() + sef::options::frameworkDirectoryPath + "layers/MessageBox.element";
 
 		// load elements
 		if (!::FileInPackageExists(elementFileName))

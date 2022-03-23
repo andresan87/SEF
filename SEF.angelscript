@@ -121,9 +121,9 @@ void setFixedHeight(const float fixedHeight)
 	::SetFixedHeight(fixedHeight);
 }
 
-::string getFrameworkDirectoryName()
+float getFixedHeight()
 {
-	return "SEF/";
+	return (sef::state::fixedHeight);
 }
 
 bool isTesting()
@@ -145,6 +145,9 @@ namespace options {
 			sef::options::internal::options = sef::string::split(file.get("sef", "options"), ",");
 		}
 	} // namespace internal
+
+	::string frameworkDirectoryPath = "";
+	::string frameworkDirectoryName = "SEF/";
 
 	const ::string JOYSTICK_MODE = "joystick-mode";
 
