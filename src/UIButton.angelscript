@@ -32,6 +32,7 @@ class UIButton : UIDrawable
 	::vector2 clickableAreaScale = ::vector2(1);
 	::vector2 clickableAreaMinAdd = ::vector2(0.0f);
 	::vector2 clickableAreaMaxAdd = ::vector2(0.0f);
+	::vector2 cursorScale = ::vector2(1.0f);
 
 	private void UIButtonConstructor()
 	{

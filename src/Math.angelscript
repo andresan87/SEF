@@ -34,13 +34,26 @@ float constrainAngleB(float x)
 	return x - 180.0f;
 }
 
+bool isPointInLine(const float p, const float pos, const float len, const float origin)
+{	
+	const float posRelative = pos - (len * origin);
+	return !(p < posRelative || p > posRelative + len);
+}
+
+bool isPointInLine(const float p, const float minimum, const float maximum)
+{	
+	return !(p < minimum || p > maximum);
+}
+
 bool isPointInRect(const ::vector2 &in p, const ::vector2 &in pos, const ::vector2 &in size, const ::vector2 &in origin)
 {	
 	const ::vector2 posRelative = ::vector2(pos.x - (size.x * origin.x), pos.y - (size.y * origin.y));
-	if (p.x < posRelative.x || p.x > posRelative.x + size.x || p.y < posRelative.y || p.y > posRelative.y + size.y)
-		return false;
-	else
-		return true;
+	return !(p.x < posRelative.x || p.x > posRelative.x + size.x || p.y < posRelative.y || p.y > posRelative.y + size.y);
+}
+
+bool isPointInArea(const ::vector2 &in p, const ::vector2 &in areaMin, const ::vector2 &in areaMax)
+{	
+	return !(p.x < areaMin.x || p.x > areaMax.x || p.y < areaMin.y || p.y > areaMax.y);
 }
 
 bool isOverlapping(const ::vector2 &in minA, const ::vector2 &in maxA, const ::vector2 &in minB, const ::vector2 &in maxB)
@@ -48,6 +61,17 @@ bool isOverlapping(const ::vector2 &in minA, const ::vector2 &in maxA, const ::v
 	return 
 	!(minA.x > maxB.x || maxA.x < minB.x ||
 	  minA.y > maxB.y || maxA.y < minB.y);
+}
+
+bool areRectsOverlapping(const ::vector2 &in posA, const ::vector2 &in sizeA, const ::vector2 &in posB, const ::vector2 &in sizeB)
+{
+	const vector2 halfSizeA(sizeA * 0.5f);
+	const vector2 halfSizeB(sizeB * 0.5f);
+	const vector2 minA(posA - halfSizeA);
+	const vector2 maxA(posA + halfSizeA);
+	const vector2 minB(posB - halfSizeB);
+	const vector2 maxB(posB + halfSizeB);
+	return isOverlapping(minA, maxA, minB, maxB);
 }
 
 bool isPointInRect(const ::vector2 &in p, const ::vector2 &in pos, const ::vector2 &in size)
@@ -98,9 +122,20 @@ bool isPointInCircle(const ::vector2 &in p, const ::vector2 &in pos, const float
 	return (dir - normal * 2.0f * (sef::math::dot(normal, dir)));
 }
 
+float distance(const float a, const float b)
+{
+	return ::abs(a - b);
+}
+
 float squaredDistance(const ::vector2 &in a, const ::vector2 &in b)
 {
 	const ::vector2 diff = a - b;
+	return sef::math::dot(diff, diff);
+}
+
+float squaredDistance(const ::vector3 &in a, const ::vector3 &in b)
+{
+	const ::vector3 diff = a - b;
 	return sef::math::dot(diff, diff);
 }
 
@@ -211,6 +246,11 @@ bool equals(const float a, const float b, const float epsilon)
 	return (::abs(a - b) < epsilon);
 }
 
+bool equals(const vector2 &in a, const vector2 &in b, const float epsilon)
+{
+	return equals(a.x, b.x, epsilon) && equals(a.y, b.y, epsilon);
+}
+
 void scaleToMatchHeight(::ETHEntity@ entity, const float height)
 {
 	const ::vector2 currentSize(entity.GetSize());
@@ -297,6 +337,12 @@ float normalizeHeight(const float y)
 ::vector2 applyParallax(const ::vector3 &in pos)
 {
 	return ::vector2(pos.x, pos.y) + sef::math::computeParallaxOffset(pos);
+}
+
+float randValueWithRange(const float value, const float range)
+{
+	const float halfRange = range * 0.5f;
+	return randF(value - halfRange, value + halfRange);
 }
 
 uint count(const int[]@ numbers, const int value)

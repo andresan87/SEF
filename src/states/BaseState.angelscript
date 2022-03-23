@@ -12,7 +12,6 @@ class BaseState : sef::State
 
 	private void BaseStateDefaultConstructor(const ::string &in sceneName)
 	{
-		m_controllerManager.addController(@m_layerManager);
 		m_controllerManager.addController(@m_eventScheduler);
 		m_controllerManager.addController(@m_stateElapsedTime);
 		@m_resourceManager = sef::ExclusiveResourceManager(sceneName);
@@ -134,6 +133,10 @@ class BaseState : sef::State
 	void onUpdate()
 	{
 		m_controllerManager.update();
+
+		m_layerManager.update();
+		m_layerManager.draw();
+
 		m_controllerManager.draw();
 	}
 }

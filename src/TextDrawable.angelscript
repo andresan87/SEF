@@ -35,7 +35,7 @@ class TextDrawable : sef::Drawable, sef::UIEffectManager
 		m_color = color;
 	}
 
-	::vector2 getGravity() const
+	::vector2 getGravity() const override
 	{
 		return gravity;
 	}
@@ -45,7 +45,7 @@ class TextDrawable : sef::Drawable, sef::UIEffectManager
 		return (sef::math::computeParallaxOffset(::vector3(screenSpacePos, zPos)));
 	}
 
-	void draw(const ::vector2 &in pos, const ::vector2 &in size, const ::vector2 &in origin, const sef::Color@ color)
+	void draw(const ::vector2 &in pos, const ::vector2 &in size, const ::vector2 &in origin, const sef::Color@ color) override
 	{
 		updateEffects();
 		drawEffects();
@@ -68,7 +68,8 @@ class TextDrawable : sef::Drawable, sef::UIEffectManager
 		}
 		else
 		{
-			finalColor = (sef::Color(m_color) * color * sef::Color(computeEffectColor())).getClampedUInt();
+			sef::Color effectColor(computeEffectAlpha(),  computeEffectColor());
+			finalColor = (sef::Color(m_color) * color * effectColor).getClampedUInt();
 		}
 
 		// draw
@@ -145,7 +146,7 @@ class TextDrawable : sef::Drawable, sef::UIEffectManager
 		return m_scale;
 	}
 
-	::vector2 getSize() const
+	::vector2 getSize() const override
 	{
 		return ::vector2((m_scale) * ::ComputeTextBoxSize(m_font, m_text) * m_internalFontScale);
 	}
@@ -155,12 +156,12 @@ class TextDrawable : sef::Drawable, sef::UIEffectManager
 		return m_internalFontScale;
 	}
 
-	::string getName() const
+	::string getName() const override
 	{
 		return m_text;
 	}
 
-	bool isInWorldSpace() const
+	bool isInWorldSpace() const override
 	{
 		return m_worldSpace;
 	}

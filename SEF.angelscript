@@ -8,6 +8,7 @@
 #include "src/SetDestinationEvent.angelscript"
 #include "src/Easing.angelscript"
 #include "src/Interpolator.angelscript"
+#include "src/EntityInterpolator.angelscript"
 #include "src/Color.angelscript"
 #include "src/WaypointManager.angelscript"
 #include "src/IO.angelscript"
@@ -18,6 +19,7 @@
 #include "src/GameControllerManager.angelscript"
 #include "src/Drawable.angelscript"
 #include "src/TextDrawable.angelscript"
+#include "src/HorizontalBarDrawable.angelscript"
 #include "src/FrameDrawable.angelscript"
 #include "src/WorldSpaceFrameDrawable.angelscript"
 #include "src/Font.angelscript"
@@ -34,6 +36,7 @@
 #include "src/PositionTracker.angelscript"
 #include "src/EntityTree.angelscript"
 #include "src/KeyStateManager.angelscript"
+#include "src/KeyStateManagerWithTimer.angelscript"
 #include "src/SoundStreamManager.angelscript"
 #include "src/OrientedBoundingBox.angelscript"
 #include "src/JSON.angelscript"
@@ -118,11 +121,6 @@ void setFixedHeight(const float fixedHeight)
 	::SetFixedHeight(fixedHeight);
 }
 
-float getFixedHeight()
-{
-	return sef::state::fixedHeight;
-}
-
 ::string getFrameworkDirectoryName()
 {
 	return "SEF/";
@@ -147,8 +145,6 @@ namespace options {
 			sef::options::internal::options = sef::string::split(file.get("sef", "options"), ",");
 		}
 	} // namespace internal
-
-	::string frameworkPath = "";
 
 	const ::string JOYSTICK_MODE = "joystick-mode";
 

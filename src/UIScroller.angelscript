@@ -5,6 +5,8 @@ class UIScroller
 	private ::vector2 m_scroll;
 	private float m_lastWheelScroll = 0.0f;
 	private bool m_grabbing = false;
+	private float m_elapsedTime = 0.0f;
+	private float m_startingScrollLockTime = 100.0f; 
 
 	bool horizontalScroll = false;
 	bool enableDpadScroll = true;
@@ -38,6 +40,8 @@ class UIScroller
 
 	void update(const ::vector2 &in absoluteMin, const ::vector2 &in absoluteMax)
 	{
+		m_elapsedTime += GetLastFrameElapsedTimeF();
+
 		m_grabbing = false;
 		::ETHInput@ input = ::GetInputHandle();
 		::vector2 scrollSum;
@@ -59,7 +63,10 @@ class UIScroller
 		else
 			m_scroll = scrollSum;
 
-		m_scroll = processScroll(m_scroll);
+		if (m_elapsedTime > m_startingScrollLockTime)
+		{
+			m_scroll = processScroll(m_scroll);
+		}
 	}
 
 	bool isGrabbing() const

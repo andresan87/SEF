@@ -33,11 +33,6 @@ class State
 			bucketSize);
 	}
 
-	string getSceneName()
-	{
-		return m_sceneName;
-	}
-
 	vector2 getBucketSize() const final
 	{
 		return m_bucketSize;
@@ -129,6 +124,10 @@ void sef_internal_onSceneUpdate()
 	sef::input::update();
 	sef::StateManager.runCurrentOnSceneUpdateFunction();
 	sef::TimeManager.update();
+
+	#if TESTING
+		if (GetInputHandle().GetKeyState(K_F10) == KS_HIT) sef::state::showFpsRate = !sef::state::showFpsRate;
+	#endif
 
 	if (sef::state::showFpsRate)
 	{

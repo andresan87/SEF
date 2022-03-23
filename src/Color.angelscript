@@ -131,6 +131,8 @@ class Color
 	float b;
 }
 
+const sef::Color WHITE_COLOR(0xFFFFFFFF);
+
 } // namespace sef
 
 string AssembleColorCode(const sef::Color@ color)

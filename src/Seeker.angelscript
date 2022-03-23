@@ -12,12 +12,25 @@ const ::vector2[] bucketsAroundXL = {
 	::vector2(-1, 0),                  ::vector2(1, 0),
 	::vector2(-1, 1), ::vector2(0, 1), ::vector2(1, 1),
 
-	::vector2(-2,-1), ::vector2(-2, 0), ::vector2(-2, 1),
-	::vector2(2,-1),  ::vector2(2, 0),  ::vector2(2, 1),
-
 	::vector2(-2,-2), ::vector2(-1,-2), ::vector2(0,-2), ::vector2(1,-2), ::vector2(2,-2),
-	::vector2(-2, 1), ::vector2(-2, 2), ::vector2(0, 2), ::vector2(1, 2), ::vector2(2, 2)
+	::vector2(-2,-1),                                                     ::vector2(2,-1),
+	::vector2(-2, 0),                                                     ::vector2(2, 0),
+	::vector2(-2, 1),                                                     ::vector2(2, 1),
+	::vector2(-2, 2), ::vector2(-1, 2), ::vector2(0, 2), ::vector2(1, 2), ::vector2(2, 2)
 };
+
+vector2[]@ getBucketsInArea(const vector2 &in minBucket, const vector2 &in maxBucket)
+{
+	vector2[] r;
+	for (float x = minBucket.x; x <= maxBucket.x; x += 1.0f)
+	{
+		for (float y = minBucket.y; y <= maxBucket.y; y += 1.0f)
+		{
+			r.insertLast(vector2(x, y));
+		}
+	}
+	return @r;
+}
 
 interface EntityChooser
 {
@@ -364,6 +377,68 @@ ETHEntity@ seekClosestEntityAroundBucket(const ::vector2 &in origin, sef::seeker
 	}
 
 	return @r;
+}
+
+ETHEntity@ getClosestEntity(ETHEntityArray@ entities, const vector2 &in spot)
+{
+	if (entities.Size() < 1)
+	{
+		return null;
+	}
+
+	ETHEntity@ r = @(entities[0]);
+	float closestSquaredDistance = sef::math::squaredDistance(entities[0].GetPositionXY(), spot);
+	for (uint t = 1; t < entities.Size(); t++)
+	{
+		const float currentSquaredDistance = sef::math::squaredDistance(entities[t].GetPositionXY(), spot);
+		if (currentSquaredDistance < closestSquaredDistance)
+		{
+			closestSquaredDistance = currentSquaredDistance;
+			@r = @(entities[t]);
+		}
+	}
+
+	return @r;
+}
+
+void seekEntitiesCloseToSpot(ETHEntityArray@ entities, ETHEntityArray@ outEntities, const vector2 &in spot, const float tolerance)
+{
+	const float squaredTolerance = tolerance * tolerance;
+	for (uint t = 0; t < entities.Size(); t++)
+	{
+		if (sef::math::squaredDistance(spot, entities[t].GetPositionXY()) <= squaredTolerance)
+		{
+			outEntities.Insert(entities[t]);
+		}
+	}
+}
+
+void evenSizedGridConnectionsScan(
+	ETHEntityArray@ entities,
+	ETHEntityArray@ outConnectedEntities,
+	const vector2 &in spot,
+	const vector2 &in gridSize,
+	const float tolerance = 8.0f)
+{
+	ETHEntityArray outEntities;
+	sef::seeker::seekEntitiesCloseToSpot(@entities, @outEntities, spot, tolerance);
+
+	for (uint t = 0; t < outEntities.Size(); t++)
+	{
+		outConnectedEntities.Insert(outEntities[t]);
+
+		ETHEntityArray@ newEntities = sef::util::newEntityArrayWithoutID(@entities, outEntities[t].GetID());
+		entities.Clear();
+		entities += newEntities;
+	}
+
+	if (outEntities.Size() > 0)
+	{
+		evenSizedGridConnectionsScan(@entities, @outConnectedEntities, spot + vector2(0.0f, -gridSize.y), gridSize, tolerance);
+		evenSizedGridConnectionsScan(@entities, @outConnectedEntities, spot + vector2(gridSize.x,  0.0f), gridSize, tolerance);
+		evenSizedGridConnectionsScan(@entities, @outConnectedEntities, spot + vector2(0.0f,  gridSize.y), gridSize, tolerance);
+		evenSizedGridConnectionsScan(@entities, @outConnectedEntities, spot + vector2(-gridSize.x, 0.0f), gridSize, tolerance);		
+	}
 }
 
 } // namespace seeker

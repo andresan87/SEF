@@ -35,6 +35,12 @@ class KeyStateManager
 	{
 		return m_currentState;
 	}
+
+	void reset()
+	{
+		m_pressingElapsedFrameCount = 0;
+		m_currentState = KS_UP;
+	}
 }
 
 } // namespace sef

@@ -38,6 +38,7 @@ class FrameTimer
 		m_currentStride = 0;
 		m_currentFrame = m_currentFirst;
 		m_time = 0.0f;
+		m_finished = false;
 	}
 
 	bool isFinished() const

@@ -160,6 +160,31 @@ class AddEntityEvent : sef::Event
 	} 	
 }
 
+class AddEntityIfOtherIsAliveEvent : sef::AddEntityEvent
+{
+	::ETHEntity@ m_other;
+
+	AddEntityIfOtherIsAliveEvent(
+		ETHEntity@ other,
+		const ::string &in entityName,
+		const ::vector3 &in position,
+		const float angle = 0.0f,
+		const ::string &in alternativeName = "",
+		const float scale = 1.0f)
+	{
+		super(entityName, position, angle, alternativeName, scale);
+		@m_other = other;
+	}
+
+	void run()
+	{
+		if (m_other.IsAlive())
+		{
+			AddEntityEvent::run();
+		}
+	} 	
+}
+
 class PlaySampleEvent : sef::Event
 {
 	protected ::string m_name;
@@ -214,6 +239,44 @@ class SetUIntEvent : sef::Event
 		{
 			m_entity.SetUInt(m_key, m_value);
 		}
+	}
+}
+
+class SetFrameEvent : sef::Event
+{
+	private uint m_frame;
+	private ::ETHEntity@ m_entity;
+
+	SetFrameEvent(::ETHEntity@ entity, const uint frame)
+	{
+		m_frame = frame;
+		@m_entity = @entity;
+	}
+
+	void run()
+	{
+		if (m_entity !is null)
+		{
+			m_entity.SetFrame(m_frame);
+		}
+	}
+}
+
+class AddSceneEvent : sef::Event
+{
+	private string m_sceneFileName;
+	private vector3 m_pos;
+
+	AddSceneEvent(const string &in sceneFileName, const vector3 &in pos)
+	{
+		m_sceneFileName = sceneFileName;
+		m_pos = pos;
+	}
+
+	void run() override
+	{
+		ETHEntityArray newPieceEntities;
+		AddScene(m_sceneFileName, m_pos, newPieceEntities);
 	}
 }
 

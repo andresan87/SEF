@@ -117,7 +117,7 @@ class NotificationLayer : sef::UILayer
 		super("Notificator");
 	}
 
-	void notify(
+	sef::Notification@ notify(
 		const uint delay,
 		const uint holdTime,
 		sef::Notification@ notification,
@@ -127,7 +127,7 @@ class NotificationLayer : sef::UILayer
 	{
 		if (unique && find(@notification))
 		{
-			return;
+			return null;
 		}
 
 		const ::vector2 normPos(notification.getNormPos());
@@ -140,6 +140,8 @@ class NotificationLayer : sef::UILayer
 		notification.setDismissEffect((dismissEffect !is null) ? @dismissEffect : createDefaultDismissEffect(holdTime, normPos));
 		notification.setName("notification" + (m_notificationCounter++));
 		insertElement(@notification);
+
+		return @notification;
 	}
 
 	sef::WaypointManager@ createDefaultAppearEffect(const uint delay, const ::vector2 &in normPos)

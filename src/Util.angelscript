@@ -21,6 +21,33 @@ bool entityCallbackActionRepeater(::ETHEntity@ thisEntity, const ::string &in ac
 	}
 }
 
+bool entityCallbackActionRepeaterWithAbsoluteTime(::ETHEntity@ thisEntity, const ::string &in actionName, const float stride)
+{
+	if (thisEntity.CheckCustomData(actionName) != ::DT_FLOAT)
+	{
+		thisEntity.SetFloat(actionName, GetTimeF());
+	}
+
+	const float lastTime = thisEntity.GetFloat(actionName);
+	const float elapsedTime = GetTimeF() - lastTime;
+	if (elapsedTime >= stride || elapsedTime < 0.0f /*in case global timer resets*/)
+	{
+		thisEntity.SetFloat(actionName, GetTimeF());
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool doOnce(ETHEntity@ thisEntity, const string &in actionName)
+{
+	const bool r = (thisEntity.GetUInt(actionName) == 0);
+	thisEntity.SetUInt(actionName, 1);
+	return r;
+}
+
 ::vector2 getScreenMiddle()
 {
 	return ::GetCameraPos() + (::GetScreenSize() * 0.5f);
@@ -138,6 +165,24 @@ void addLayer(sef::UILayer@ layer)
 	if (layerManager !is null)
 	{
 		layerManager.insertLayer(@layer);
+	}
+}
+
+class AddLayerEvent : sef::Event
+{
+	sef::UILayer@ m_layer;
+
+	AddLayerEvent(sef::UILayer@ layer)
+	{
+		@m_layer = @layer;
+	}
+
+	void run() override
+	{
+		if (m_layer !is null)
+		{
+			sef::util::addLayer(@m_layer);
+		}
 	}
 }
 
@@ -335,37 +380,28 @@ bool transferCustomData(const ::string &in name, ::ETHEntity@ source, ::ETHEntit
 	return true;
 }
 
-::vector2 getEntityPos(const ::string &in name, const ::vector2 &in bucket)
+::vector2 getEntityPosFromBucket(const ::string &in name, const ::vector2 &in bucket, const ::vector2 defaultValue)
 {
-	const ::vector3 pos(sef::util::getEntityPos3D(name, bucket));
+	const ::vector3 pos(sef::util::getEntityPosFromBucket3D(name, bucket, vector3(defaultValue, 0.0f)));
 	return ::vector2(pos.x, pos.y);
 }
 
-::vector2 getEntityPos(const ::string &in name)
+::vector2 getEntityPos(const ::string &in name, const vector2 defaultValue = vector2(0.0f))
 {
-	const ::vector3 pos(sef::util::getEntityPos3D(name));
+	const ::vector3 pos(sef::util::getEntityPos3D(name, vector3(defaultValue, 0.0f)));
 	return ::vector2(pos.x, pos.y);
 }
 
-::vector3 getEntityPos3D(const ::string &in name, const ::vector2 &in bucket)
+::vector3 getEntityPosFromBucket3D(const ::string &in name, const ::vector2 &in bucket, const ::vector3 defaultValue)
 {
 	::ETHEntity@ entity = sef::seeker::forceSeekEntityAroundBucket(bucket, name);
 	if (entity !is null)
 		return entity.GetPosition();
 	else
-		return ::vector3();
+		return defaultValue;
 }
 
-::vector3 getEntityPos3D(const ::string &in name)
-{
-	::ETHEntity@ entity = ::SeekEntity(name);
-	if (entity !is null)
-		return entity.GetPosition();
-	else
-		return ::vector3();
-}
-
-::vector3 getEntityPos3D_s(const ::string &in name, const ::vector3 defaultValue = ::vector3(0.0f))
+::vector3 getEntityPos3D(const ::string &in name, const ::vector3 defaultValue = ::vector3(0.0f))
 {
 	::ETHEntity@ entity = ::SeekEntity(name);
 	if (entity !is null)
@@ -388,6 +424,31 @@ void wakeEntitiesAroundBucket(const ::vector2 &in bucket)
 	}
 }
 
+ETHEntityArray@ newEntityArrayWithoutID(const ETHEntityArray@ entities, const int id)
+{
+	ETHEntityArray r;
+	for (uint t = 0; t < entities.Size(); t++)
+	{
+		if (entities[t].GetID() != id)
+		{
+			r.Insert(entities[t]);
+		}
+	}
+	return @r;
+}
+
+int findEntity(const ETHEntityArray@ entities, const int id)
+{
+	for (int t = 0; t < int(entities.Size()); t++)
+	{
+		if (entities[t].GetID() == id)
+		{
+			return t;
+		}
+	}
+	return -1;
+}
+
 void strechSprite(const ::string &in name, const ::vector2 &in min, const ::vector2 &in max, const uint color)
 {
 	if (!sef::math::isPointInScreen(min) && !sef::math::isPointInScreen(max))
@@ -405,6 +466,13 @@ void drawLine(const ::vector2 &in a, const ::vector2 &in b, const uint color, co
 	const ::vector2 v(a - b);
 	::SetSpriteOrigin(bitmap, ::vector2(0.5f, 1.0f));
 	::DrawShapedSprite(bitmap, a, vector2(width, length(v)), color, radianToDegree(getAngle(v)));
+}
+
+vector2 getCollisionBoxSize(ETHEntity@ thisEntity)
+{
+	const vector3 thisSize(thisEntity.GetCollisionBox().size);
+	const vector2 thisScale(thisEntity.GetScale());
+	return vector2(thisSize.x * thisScale.x, thisSize.y * thisScale.y);
 }
 
 void drawAlignedLine(
@@ -651,6 +719,77 @@ float getFloatFromJSONObject(JSONObject parent, const ::string &in key, const fl
 	return float(sef::util::getNumberFromJSONObject(parent, key, defaultValue));
 }
 
+float readFloat(::enmlFile@ file, const ::string &in enmlEntityName, const ::string &in attribute, const float f)
+{
+	float value = 0.0f;
+	if (file.getFloat(enmlEntityName, attribute, value))
+	{
+		return value;
+	}
+	else
+	{
+		return f;
+	}
+}
+
+uint readUInt(::enmlFile@ file, const ::string &in enmlEntityName, const ::string &in attribute, const uint ui)
+{
+	uint value = 0;
+	if (file.getUInt(enmlEntityName, attribute, value))
+	{
+		return value;
+	}
+	else
+	{
+		return ui;
+	}
+}
+
+uint64 readUInt64(::enmlFile@ file, const ::string &in enmlEntityName, const ::string &in attribute, const uint64 ui)
+{
+	uint64 value = 0;
+	if (file.getUInt(enmlEntityName, attribute, value))
+	{
+		return value;
+	}
+	else
+	{
+		return ui;
+	}
+}
+
+uint readInt(::enmlFile@ file, const ::string &in enmlEntityName, const ::string &in attribute, const int i)
+{
+	int value = 0;
+	if (file.getInt(enmlEntityName, attribute, value))
+	{
+		return value;
+	}
+	else
+	{
+		return i;
+	}
+}
+
+bool readBool(::enmlFile@ file, const ::string &in enmlEntityName, const ::string &in attribute, const bool b)
+{
+	::string r = file.get(enmlEntityName, attribute);
+	if (r != "")
+	{
+		return (r == "true");
+	}
+	else
+	{
+		return b;
+	}
+}
+
+string readString(::enmlFile@ file, const ::string &in enmlEntityName, const ::string &in attribute, const string &in defaultValue)
+{
+	const ::string r = file.get(enmlEntityName, attribute);
+	return  (r != "") ? r : defaultValue;
+}
+
 vector3 setIndexedValue(vector3 v, const uint index, const float value)
 {
 	switch (index)
@@ -663,6 +802,20 @@ vector3 setIndexedValue(vector3 v, const uint index, const float value)
 		break;
 	case 2:
 		v.z = value;
+		break;
+	}
+	return v;
+}
+
+vector2 setIndexedValue(vector2 v, const uint index, const float value)
+{
+	switch (index)
+	{
+	case 0:
+		v.x = value;
+		break;
+	case 1:
+		v.y = value;
 		break;
 	}
 	return v;

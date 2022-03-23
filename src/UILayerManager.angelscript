@@ -115,7 +115,7 @@ class UILayerManager : sef::GameController
 	void update()
 	{
 #if ALLOW_HUD_TOGGLE
-		if (::GetInputHandle().GetKeyState(::K_F1) == ::KS_HIT) m_hideUI = !m_hideUI;
+		if (::GetInputHandle().GetKeyState(::K_F1) == ::KS_HIT || ::GetInputHandle().JoyButtonState(0, JK_06) == ::KS_HIT) m_hideUI = !m_hideUI;
 #endif
 
 		for (uint t = 0; t < m_layers.length();)

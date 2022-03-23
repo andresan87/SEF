@@ -30,7 +30,7 @@ class FrameDrawable : Drawable
 		m_frameColor = sef::Color(1.0f, ::vector3(1.0f));
 	}
 
-	::vector2 getGravity() const
+	::vector2 getGravity() const override
 	{
 		return vector2(0.0f);
 	}
@@ -75,6 +75,32 @@ class FrameDrawable : Drawable
 		return @sprite;
 	}
 
+	sef::SpriteFrameDrawable@ setSprite(
+		const ::string &in spriteName,
+		const uint columns,
+		const uint rows,
+		const uint frame,
+		const float angle,
+		const vector3 &in color)
+	{
+		sef::SpriteFrameDrawable sprite(spriteName, columns, rows, frame, angle, color);
+		m_addings.insertLast(@sprite);
+		return @sprite;
+	}
+
+	sef::ShadowedSpriteFrameDrawable@ setShadowedSprite(
+		const ::string &in spriteName,
+		const uint columns = 1,
+		const uint rows = 1,
+		const uint frame = 0,
+		const float angle = 0.0f,
+		const uint color = 0xFFFFFFFF)
+	{
+		sef::ShadowedSpriteFrameDrawable sprite(spriteName, columns, rows, frame, angle, color);
+		m_addings.insertLast(@sprite);
+		return @sprite;
+	}
+
 	void removeAllAddings()
 	{
 		m_addings.resize(0);
@@ -112,7 +138,7 @@ class FrameDrawable : Drawable
 		m_frameSize = size;
 	}
 
-	::vector2 getSize() const
+	::vector2 getSize() const override
 	{
 		return m_frameSize;
 	}
@@ -132,7 +158,7 @@ class FrameDrawable : Drawable
 		return m_backgroundTiles;
 	}
 
-	void draw(const ::vector2 &in _pos, const ::vector2 &in size, const ::vector2 &in origin, const sef::Color@ color)
+	void draw(const ::vector2 &in _pos, const ::vector2 &in size, const ::vector2 &in origin, const sef::Color@ color) override
 	{
 		if (m_highQuality)
 			drawHighQuality(_pos, size, origin, color * m_frameColor);
@@ -341,6 +367,19 @@ class FrameDrawable : Drawable
 		return m_addings.length();
 	}
 
+	uint getNumSpriteDrawables() const
+	{
+		uint r = 0;
+		for (uint t = 0; t < m_addings.length(); t++)
+		{
+			if (cast<sef::SpriteDrawable>(m_addings[t]) !is null)
+			{
+				r++;
+			}
+		}
+		return r;
+	}
+
 	bool setText(const uint idx, const ::string &in str)
 	{
 		uint iter = 0;
@@ -463,7 +502,7 @@ class FrameDrawable : Drawable
 		::DrawShapedSprite(sprite, pos - (origin * size), size, color.getAlpha(), color.getVector3(), 0.0f);
 	}
 
-	bool isInWorldSpace() const
+	bool isInWorldSpace() const override
 	{
 		return false;
 	}

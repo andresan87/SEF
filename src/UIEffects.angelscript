@@ -322,13 +322,23 @@ sef::WaypointManager@ createButtonReleaseEffect(const float currentScale, sef::C
 	return @r;
 }
 
-sef::WaypointManager@ createFadeOutEffect(const uint time, const float scaleA, const float scaleB, const uint finalColor)
+sef::WaypointManager@ createFadeOutEffect(const uint time, const float scaleA, const float scaleB, const uint finalColor, const bool pausable = false)
 {
 	const bool repeat = false;
 	sef::WaypointManager r(repeat);
-	r.setPausable(false);
+	r.setPausable(pausable);
 	r.addWaypoint(sef::Waypoint(::vector2(0.0f), time, sef::Color(0xFFFFFFFF), @sef::easing::smoothEnd, 0.0f, scaleA));
 	r.addWaypoint(sef::Waypoint(::vector2(0.0f),   12, sef::Color(finalColor), @sef::easing::smoothEnd, 0.0f, scaleB));
+	return @r;
+}
+
+sef::WaypointManager@ createFadeInEffect(const uint time, const float scaleA, const float scaleB, const uint startColor, const bool pausable = false)
+{
+	const bool repeat = false;
+	sef::WaypointManager r(repeat);
+	r.setPausable(pausable);
+	r.addWaypoint(sef::Waypoint(::vector2(0.0f), time, sef::Color(startColor), @sef::easing::smoothEnd, 0.0f, scaleA));
+	r.addWaypoint(sef::Waypoint(::vector2(0.0f),   12, sef::Color(0xFFFFFFFF), @sef::easing::smoothEnd, 0.0f, scaleB));
 	return @r;
 }
 

@@ -15,7 +15,7 @@ void setUserData(const ::string &in key, const ::string &in value)
 	::SaveStringToFile(sef::assembleUserDataFilePath(key), value);
 }
 
-void setUserData(const ::string &in key, const uint64 value)
+void setUserData(const ::string &in key, const int64 value)
 {
 	setUserData(key, "" + value);
 }
@@ -38,6 +38,15 @@ void setUserData(const ::string &in key, const ::vector2 &in value)
 ::string getUserData(const ::string &in key)
 {
 	return ::GetStringFromFile(sef::assembleUserDataFilePath(key));
+}
+
+::string getUserData(const ::string &in key, const ::string &in defaultValue)
+{
+	const ::string fileName = sef::assembleUserDataFilePath(key);
+	if (::FileExists(fileName))
+		return ::GetStringFromFile(fileName);
+	else
+		return defaultValue;
 }
 
 bool getBoolUserData(const ::string &in key, const bool defaultValue)
@@ -71,6 +80,15 @@ uint getUIntUserData(const ::string &in key, const uint defaultValue = 0)
 	const ::string value = sef::getUserData(key);
 	if (value != "")
 		return ::parseUInt(value);
+	else
+		return defaultValue;
+}
+
+int getIntUserData(const ::string &in key, const int defaultValue = 0)
+{
+	const ::string value = sef::getUserData(key);
+	if (value != "")
+		return ::parseInt(value);
 	else
 		return defaultValue;
 }

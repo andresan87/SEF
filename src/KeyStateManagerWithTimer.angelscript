@@ -18,6 +18,12 @@ class KeyStateManagerWithTimer : sef::KeyStateManager
 		}
 	}
 
+	void resetTimer()
+	{
+		m_pressElapsedTime = 0.0f;
+		reset();
+	}
+
 	float getPressElapsedTime() const
 	{
 		return m_pressElapsedTime;

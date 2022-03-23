@@ -8,9 +8,10 @@ class LayerDarkBackground : UIDrawable
 		const uint fadeOutTime = 300,
 		const ::vector3 color = ::vector3(0.0f),
 		const ::string sprite = "",
-		const uint delay = 0)
+		const uint delay = 0,
+		const uint dismissDelay = 0)
 	{
-		const ::string spriteName = (sprite == "") ? (sef::options::frameworkPath + "SEF/media/sef-white-2-1.png") : sprite;
+		const ::string spriteName = (sprite == "") ? "SEF/media/sef-white-2-1.png" : sprite;
 		const float scaleY = (::GetScreenSize().y / ::GetSpriteFrameSize(spriteName).y);
 		const float scaleX = (::GetScreenSize().x / ::GetSpriteFrameSize(spriteName).x);
 		const float scale = max(scaleX, scaleY);
@@ -23,7 +24,7 @@ class LayerDarkBackground : UIDrawable
 			scale);
 
 		setColor(sef::Color(opacity, color));
-		setDismissEffect(sef::uieffects::createColorBlendEffect(sef::Color(0xFFFFFFFF), sef::Color(0x00FFFFFF), fadeOutTime));
+		setDismissEffect(sef::uieffects::createColorBlendEffect(sef::Color(0xFFFFFFFF), sef::Color(0x00FFFFFF), fadeOutTime, dismissDelay));
 		setName("background");
 	}
 }

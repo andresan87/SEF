@@ -246,6 +246,18 @@ uint lineCount(const ::string &in str)
 	return sef::string::split(str, "\n").length();
 }
 
+uint utf8Length(const string &in str)
+{
+	uint r = 0;
+	const uint n = str.length();
+	for (uint t = 1; t < n; t++)
+	{
+		if (isValidUTF8(str.substr(0, t)))
+			r++;
+	}
+	return r;
+}
+
 ::string repeat(const ::string str, const uint count)
 {
 	::string r;
@@ -436,11 +448,27 @@ uint parseUInt(const ::string &in value, const uint defaultValue)
 	}
 }
 
-::vector3 parseVector3(const ::string &in v)
+::vector3 parseVector3(const ::string &in v, const vector3 defaultValue = vector3(0.0f))
 {
 	::string[] elements = sef::string::split(v, ",");
 	const uint length = uint(min(elements.length(), 3));
-	vector3 r(0.0f);
+	vector3 r(defaultValue);
+	for (uint t = 0; t < length; t++)
+	{
+		elements[t] = sef::string::replace(elements[t], " ", "");
+		if (sef::string::isValidNumber(elements[t]))
+		{
+			r = sef::util::setIndexedValue(r, t, parseFloat(elements[t]));
+		}
+	}
+	return r;
+}
+
+::vector2 parseVector2(const ::string &in v, const vector2 defaultValue = vector2(0.0f))
+{
+	::string[] elements = sef::string::split(v, ",");
+	const uint length = uint(min(elements.length(), 2));
+	vector2 r(defaultValue);
 	for (uint t = 0; t < length; t++)
 	{
 		elements[t] = sef::string::replace(elements[t], " ", "");

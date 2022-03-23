@@ -103,6 +103,36 @@ abstract class UIEffect : sef::GameController
 	void update() override { }
 }
 
+class UIHighlightEffect : sef::UIEffect
+{
+	private float m_elapsedTime = 0.0f;
+	private float m_stride;
+	private float m_scaleA;
+	private float m_scaleB;
+	private ::vector3 m_colorA;
+	private ::vector3 m_colorB;
+
+	UIHighlightEffect(const uint stride, const float scaleA, const float scaleB, const ::vector3 &in colorA, const ::vector3 &in colorB)
+	{
+		m_stride = ::max(stride, 1);
+		m_scaleA = scaleA;
+		m_scaleB = scaleB;
+		m_colorA = colorA;
+		m_colorB = colorB;
+	}
+
+	void update() override
+	{
+		m_elapsedTime = min(m_elapsedTime + ::GetLastFrameElapsedTimeF(), m_stride);
+		const float radian = (m_elapsedTime / m_stride) * (::PI * 2.0f);
+		const float bias = (::sin(radian) + 1.0f) / 2.0f;
+		color = sef::interpolator::interpolate(m_colorA, m_colorB, bias);
+		scale = sef::interpolator::interpolate(m_scaleA, m_scaleB, bias);
+	}
+
+	void draw() override { }
+}
+
 class UIBlinkEffect : sef::UIEffect
 {
 	private float m_elapsedTime = 0.0f;
@@ -342,6 +372,40 @@ class UIParticleEffect : sef::UIEffect
 			m_elapsedTime = 0;
 			PlayParticleEffect(m_effectName, uiElement.getAbsoluteCurrentMiddlePoint(), 0.0f, m_scale);
 		}
+	}
+}
+
+class UIPlayParticleEffectOnce : sef::UIEffect
+{
+	private ::string m_effectName;
+	private vector2 m_absPos;
+	private float m_scale;
+	private bool m_updatedOnce = false;
+
+	UIPlayParticleEffectOnce(
+		const string &in effectName,
+		const ::vector2 &in absPos,
+		const float scale = 1.0f)
+	{
+		m_effectName = effectName;
+		m_absPos = absPos;
+		m_scale = scale;
+	}
+
+	bool ended() override
+	{
+		const bool r = m_updatedOnce;
+		m_updatedOnce = true;
+		return r;
+	}
+
+	void update() override
+	{
+	}
+
+	void draw() override
+	{
+		PlayParticleEffect(m_effectName, m_absPos, 0.0f, m_scale);
 	}
 }
 

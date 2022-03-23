@@ -29,7 +29,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 	UIButtonDpadIterator(sef::UILayer@ layer, const ::string &in first)
 	{
 		super(@layer, first);
-		m_color = sef::Color(0xFFFFFFFF);
+		m_color = sef::Color(0.6f, vector3(1.3f));
 	}
 
 	void setColor(const sef::Color color)
@@ -177,7 +177,7 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 
 		// create element
 		sef::FrameDrawable drawable(
-			sef::options::frameworkPath + "SEF/media/button-highlight.png",
+			"SEF/media/button-highlight.png",
 			computeSize(@current),
 			false,  // borderOutside
 			true);
@@ -339,9 +339,9 @@ class UIButtonDpadIterator : sef::UIButtonIterator, sef::GameController
 		}
 	}
 
-	::vector2 computeSize(sef::UIDrawable@ current) const
+	::vector2 computeSize(sef::UIButton@ current) const
 	{
-		return (current.getDrawable().getSize());
+		return (current.getDrawable().getSize() * current.cursorScale);
 	}
 
 	sef::UIDrawable@ getCursor()

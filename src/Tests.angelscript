@@ -94,7 +94,15 @@ void runTests()
 	sef::tests::assert(!sef::string::isValidNumber("oie"), "isValidNumber test #55");
 	sef::tests::assert(!sef::string::isValidNumber("0.a"), "isValidNumber test #56");
 	sef::tests::assert(!sef::string::isValidNumber("10.bb"), "isValidNumber test #57");
-	sef::tests::assert(!sef::string::isValidNumber(""), "isValidNumber test #58");
+	sef::tests::assert(!sef::string::isValidNumber("10,0"), "isValidNumber test #58");
+	sef::tests::assert(!sef::string::isValidNumber("10,1230"), "isValidNumber test #59");
+	sef::tests::assert(!sef::string::isValidNumber("10,"), "isValidNumber test #60");
+	sef::tests::assert(!sef::string::isValidNumber(",10"), "isValidNumber test #61");
+	sef::tests::assert(!sef::string::isValidNumber("1,1"), "isValidNumber test #62");
+	sef::tests::assert(!sef::string::isValidNumber("1,"), "isValidNumber test #63");
+	sef::tests::assert(!sef::string::isValidNumber(",1"), "isValidNumber test #64");
+	sef::tests::assert(!sef::string::isValidNumber("1."), "isValidNumber test #65");
+	sef::tests::assert(!sef::string::isValidNumber(""), "isValidNumber test #66");
 
 	sef::tests::assert(sef::string::split("testing;this",      ";").length() == 2, "split test #1");
 	sef::tests::assert(sef::string::split("testing;this;text", ";").length() == 3, "split test #2");
@@ -213,7 +221,7 @@ void runTests()
 	sef::tests::assert(!sef::string::suffixMatches("", " "), "suffixMatches test #13");
 	sef::tests::assert(sef::string::suffixMatches("", ""), "suffixMatches test #14");
 
-	string[] a, b;
+	{ string[] a, b;
 	sef::tests::assert(sef::string::areEqual(a, b), "areEqual test #1");
 
 	a = { "marielle", "karl", "marcelo", "noam" };
@@ -280,7 +288,31 @@ void runTests()
 	a = { "marielle", "marielle", "marielle", "marielle", "marielle", "marielle" };
 	b = { "marielle" };
 	sef::string::removeDuplicates(@a);
-	sef::tests::assert(sef::string::areEqual(@a, @b), "removeDuplicates test #9");
+	sef::tests::assert(sef::string::areEqual(@a, @b), "removeDuplicates test #9");	}
+
+	for (uint a = 0; a < sef::seeker::bucketsAround.length(); a++)
+	{
+		for (uint b = 0; b < sef::seeker::bucketsAround.length(); b++)
+		{
+			if (a == b)
+			{
+				continue;
+			}
+			sef::tests::assert(sef::seeker::bucketsAround[a] != sef::seeker::bucketsAround[b], "sef::seeker::bucketsAround has duplicate!");			
+		}
+	}
+
+	for (uint a = 0; a < sef::seeker::bucketsAroundXL.length(); a++)
+	{
+		for (uint b = 0; b < sef::seeker::bucketsAroundXL.length(); b++)
+		{
+			if (a == b)
+			{
+				continue;
+			}
+			sef::tests::assert(sef::seeker::bucketsAroundXL[a] != sef::seeker::bucketsAroundXL[b], "sef::seeker::bucketsAroundXL has duplicate!");			
+		}
+	}
 }
 
 } // namespace tests

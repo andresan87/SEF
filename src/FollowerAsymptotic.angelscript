@@ -2,12 +2,12 @@
 
 class FollowerAsymptotic : sef::GameController
 {
-	private float m_stepBias;
+	private vector3 m_stepBias;
 	private bool m_dontPause;
 	private ::vector3 m_destPos;
 	private ::vector3 m_currentPos;
 
-	private void FollowerAsymptoticConstructor(const ::vector3 pos, const float stepBias, const bool dontPause)
+	private void FollowerAsymptoticConstructor(const ::vector3 pos, const vector3 &in stepBias, const bool dontPause)
 	{
 		m_stepBias = stepBias;
 		m_dontPause = dontPause;
@@ -17,12 +17,12 @@ class FollowerAsymptotic : sef::GameController
 
 	FollowerAsymptotic(const ::vector2 pos, const float stepBias, const bool dontPause = false)
 	{
-		FollowerAsymptoticConstructor(::vector3(pos, 0.0f), stepBias, dontPause);
+		FollowerAsymptoticConstructor(::vector3(pos, 0.0f), vector3(stepBias), dontPause);
 	}
 
 	FollowerAsymptotic(const ::vector3 pos, const float stepBias, const bool dontPause = false)
 	{
-		FollowerAsymptoticConstructor(pos, stepBias, dontPause);
+		FollowerAsymptoticConstructor(pos, vector3(stepBias), dontPause);
 	}
 
 	void setDestinationPos(const ::vector2 &in destPos)
@@ -46,14 +46,19 @@ class FollowerAsymptotic : sef::GameController
 		forcePosition(::vector3(pos, 0.0f));
 	}
 
-	float getStepBias() const
+	vector3 getStepBias() const
 	{
 		return m_stepBias;
 	}
 
-	void setStepBias(const float bias)
+	void setStepBias(const vector3 &in bias)
 	{
 		m_stepBias = bias;
+	}
+
+	void setStepBias(const float bias)
+	{
+		m_stepBias = vector3(bias);
 	}
 
 	::vector2 getPos() const
@@ -75,9 +80,15 @@ class FollowerAsymptotic : sef::GameController
 
 	void update() override
 	{
-		const float bias = sef::computeManagedAsymptoticTimeBias(m_stepBias, !m_dontPause);
+		const vector3 bias = sef::computeManagedAsymptoticTimeBias(m_stepBias, !m_dontPause);
 		m_currentPos = sef::asymptoticMove(m_currentPos, m_destPos, bias);
 	}
+}
+
+vector3 computeManagedAsymptoticTimeBias(const vector3 &in bias, const bool pausable = true)
+{
+	const float fpsBias = 60.0f / ::max(::GetFPSRate(), 10.0f);
+	return bias * fpsBias * (pausable ? sef::TimeManager.getFactor() : 1.0f);
 }
 
 float computeManagedAsymptoticTimeBias(const float bias, const bool pausable = true)
@@ -110,20 +121,20 @@ float asymptoticMove(float current, const float dest, const float bias, const fl
 		return asymptoticMove(current, dest, bias);
 }
 
-::vector2 asymptoticMove(const ::vector2 &in current, const ::vector2 &in dest, const float bias)
+::vector2 asymptoticMove(const ::vector2 &in current, const ::vector2 &in dest, const vector2 &in bias)
 {
 	return ::vector2(
-		sef::asymptoticMove(current.x, dest.x, bias),
-		sef::asymptoticMove(current.y, dest.y, bias)
+		sef::asymptoticMove(current.x, dest.x, bias.x),
+		sef::asymptoticMove(current.y, dest.y, bias.y)
 	);
 }
 
-::vector3 asymptoticMove(const ::vector3 &in current, const ::vector3 &in dest, const float bias)
+::vector3 asymptoticMove(const ::vector3 &in current, const ::vector3 &in dest, const vector3 &in bias)
 {
 	return ::vector3(
-		sef::asymptoticMove(current.x, dest.x, bias),
-		sef::asymptoticMove(current.y, dest.y, bias),
-		sef::asymptoticMove(current.z, dest.z, bias)
+		sef::asymptoticMove(current.x, dest.x, bias.x),
+		sef::asymptoticMove(current.y, dest.y, bias.y),
+		sef::asymptoticMove(current.z, dest.z, bias.z)
 	);
 }
 

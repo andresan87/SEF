@@ -37,6 +37,11 @@ class UIDrawableText : sef::UIDrawable
 		m_textDrawable.setText(text);
 	}
 
+	sef::TextDrawable@ getTextDrawable()
+	{
+		return @m_textDrawable;
+	}
+
 	::string getText() const
 	{
 		return m_textDrawable.getText();

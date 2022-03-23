@@ -20,6 +20,7 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 	::vector2 m_currentNormPos;
 	float m_currentScale;
 	sef::Color m_currentColor;
+	sef::DimController@ m_dimController;
 
 	private sef::UIScrollOffset@ m_scrollOffset = sef::UIScrollOffset();
 
@@ -95,6 +96,14 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 	{
 		super(beginningAnimation);
 		UIDrawableConstructor(@drawable, normPos, origin, scale);
+	}
+
+	const sef::Color@ getDimControllerColor()
+	{
+		if (m_dimController !is null)
+			return m_dimController.getDimColor();
+		else
+			return @sef::WHITE_COLOR;
 	}
 
 	void setScrollOffset(sef::UIScrollOffset@ scrollOffset)
@@ -276,6 +285,13 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 		m_origin = origin;
 	}
 
+	void centralizeOrigin()
+	{
+		const vector2 originDelta(vector2(0.5f) - getOrigin());
+		setOrigin(vector2(0.5f));
+		addToNormPos(sef::math::normalizePosition(getSize()) * originDelta);
+	}
+
 	private ::vector2 getAbsoluteMiddlePoint(const ::vector2 &in normPos) const
 	{
 		::vector2 pos(::GetScreenSize() * normPos);
@@ -322,7 +338,7 @@ class UIDrawable : sef::UIAnimatedElement, sef::UIEffectManager
 		UIAnimatedElement::draw();
 		const ::vector2 pos((m_currentNormPos + computeEffectOffset()) * ::GetScreenSize());
 
-		const sef::Color drawColor(m_currentColor * sef::Color(computeEffectAlpha(), computeEffectColor()));
+		const sef::Color drawColor(m_currentColor * sef::Color(computeEffectAlpha(), computeEffectColor()) * getDimControllerColor());
 		m_drawable.draw(pos + m_positionOffset, getSize() * computeEffectScale(), m_origin, @drawColor);
 
 		drawEffects();
@@ -469,6 +485,11 @@ class DismissUIDrawable : sef::Event
 	{
 		m_drawable.dismiss(@m_dismissEffect);
 	}
+}
+
+interface DimController
+{
+	sef::Color@ getDimColor();
 }
 
 } // namespace sef
